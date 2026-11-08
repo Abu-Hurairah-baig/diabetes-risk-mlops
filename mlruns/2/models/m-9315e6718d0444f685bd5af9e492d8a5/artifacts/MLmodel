@@ -1,0 +1,24 @@
+artifact_path: file:C:/Users/FLH/Desktop/diabetes-mlops/mlruns/2/models/m-9315e6718d0444f685bd5af9e492d8a5/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.14.8
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.1
+    skops_trusted_types:
+    - sklearn.tree._tree.Tree
+mlflow_version: 3.17.0
+model_id: m-9315e6718d0444f685bd5af9e492d8a5
+model_size_bytes: 2091932
+model_uuid: m-9315e6718d0444f685bd5af9e492d8a5
+prompts: null
+run_id: 8259916ce0ed4c96ab642235d068f75e
+utc_time_created: '2026-11-08 06:56:55.256583'
