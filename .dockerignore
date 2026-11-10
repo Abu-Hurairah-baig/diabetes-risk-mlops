@@ -1,0 +1,10 @@
+diabetes_risk.csv
+mlflow.db
+mlruns/
+model.pkl
+metrics.json
+.git
+.dvc
+*.dvc
+tests/
+__pycache__/
