@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 import mlflow
 import mlflow.sklearn
+from mlflow.tracking import MlflowClient
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -11,6 +12,9 @@ from sklearn.metrics import accuracy_score
 
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("diabetes-risk-project")
+
+MODEL_NAME = "diabetes-risk-model"
+ACCURACY_THRESHOLD = 0.75
 
 model_type = sys.argv[1] if len(sys.argv) > 1 else "logistic"
 test_size = 0.2
@@ -43,15 +47,23 @@ with mlflow.start_run():
     mlflow.log_param("rows_in_dataset", len(data))
     mlflow.log_metric("accuracy", acc)
 
-    # CI quality gate reads this file
     with open("metrics.json", "w") as f:
         json.dump({"accuracy": acc}, f)
 
-    mlflow.sklearn.log_model(
+    model_info = mlflow.sklearn.log_model(
         model,
         name="model",
-        registered_model_name="diabetes-risk-model",
+        registered_model_name=MODEL_NAME,
         skops_trusted_types=["sklearn.tree._tree.Tree"],
     )
     joblib.dump(model, "model.pkl")
     print("Model saved to model.pkl and recorded in MLflow")
+
+    if acc >= ACCURACY_THRESHOLD:
+        client = MlflowClient()
+        client.set_registered_model_alias(
+            MODEL_NAME, "champion", model_info.registered_model_version
+        )
+        print(f"SUCCESS: version {model_info.registered_model_version} promoted to 'champion'")
+    else:
+        print(f"NOT promoted: accuracy {acc:.3f} < threshold {ACCURACY_THRESHOLD}")
